@@ -1,0 +1,346 @@
+<div class="tickets-page">
+  <app-role-back-button />
+
+  @if (errorMessage) {
+    <div class="error-message">
+      {{ errorMessage }}
+      <button type="button" (click)="loadTickets()">Retry</button>
+    </div>
+  }
+
+  <header class="page-header">
+    <div>
+      <div class="breadcrumb">Pages / Admin / <strong>All Tickets</strong></div>
+      <h2>All Tickets</h2>
+      <p>View, search and manage all support requests.</p>
+    </div>
+    <button class="create-btn" routerLink="/admin/create-ticket">
+      + Create New Ticket
+    </button>
+  </header>
+
+  <div class="summary-grid">
+    <div class="summary-card">
+      <span>Total Tickets</span>
+      <h3>{{ tickets.length }}</h3>
+    </div>
+    <div class="summary-card">
+      <span>Open</span>
+      <h3>{{ countStatus('Open') }}</h3>
+    </div>
+    <div class="summary-card">
+      <span>In Progress</span>
+      <h3>{{ countStatus('In Progress') }}</h3>
+    </div>
+    <div class="summary-card">
+      <span>Resolved</span>
+      <h3>{{ countStatus('Resolved') }}</h3>
+    </div>
+  </div>
+
+  <section class="tickets-card">
+    <div class="card-heading">
+      <div>
+        <h3>Ticket Management</h3>
+        <p>Manage and track all submitted tickets</p>
+      </div>
+      <span class="total-label">{{ filteredTickets.length }} results</span>
+    </div>
+
+    <div class="filters">
+      <div class="search-field">
+        <span>⌕</span>
+        <input
+          type="text"
+          placeholder="Search by ID, title or description..."
+          [(ngModel)]="searchText">
+      </div>
+
+      <select [(ngModel)]="selectedStatus">
+        <option value="All">All Statuses</option>
+        <option value="Open">Open</option>
+        <option value="In Progress">In Progress</option>
+        <option value="Resolved">Resolved</option>
+        <option value="Closed">Closed</option>
+      </select>
+
+      <select [(ngModel)]="selectedPriority">
+        <option value="All">All Priorities</option>
+        <option value="Low">Low</option>
+        <option value="Medium">Medium</option>
+        <option value="High">High</option>
+        <option value="Critical">Critical</option>
+      </select>
+    </div>
+
+    <div class="table-responsive">
+      <table>
+        <thead>
+          <tr>
+            <th>Ticket ID</th>
+            <th>Subject</th>
+            <th>Category</th>
+            <th>Priority</th>
+            <th>Status</th>
+            <th>Created</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          @if (isLoading) {
+            <tr>
+              <td colspan="7" class="empty-state">Loading tickets...</td>
+            </tr>
+          }
+
+          @if (!isLoading && !errorMessage && filteredTickets.length === 0) {
+            <tr>
+              <td colspan="7" class="empty-state">No tickets found.</td>
+            </tr>
+          }
+
+          @for (ticket of filteredTickets; track ticket.id) {
+            <tr>
+              <td class="ticket-id">#TKT-{{ ticket.id }}</td>
+              <td>
+                <strong>{{ ticket.title }}</strong>
+                <small>{{ ticket.description }}</small>
+              </td>
+              <td>{{ ticket.category }}</td>
+              <td>
+                <span
+                  [class]="'priority ' + ticket.priority.toLowerCase()">
+                  {{ ticket.priority }}
+                </span>
+              </td>
+              <td>
+                <span
+                  [class]="'status ' + ticket.status.toLowerCase().replace(' ', '-')">
+                  {{ ticket.status }}
+                </span>
+              </td>
+              <td>{{ ticket.created }}</td>
+              <td>
+                <button
+                  type="button"
+                  class="view-btn"
+                  (click)="openTicket(ticket)">
+                  View
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  @if (selectedTicket) {
+    <div class="modal-overlay" (click)="closeTicket()">
+      <div class="ticket-modal" (click)="$event.stopPropagation()">
+
+        <div class="modal-header">
+          <div>
+            <h3>{{ isEditMode ? 'Edit Ticket' : 'Ticket Details' }}</h3>
+            <p>
+              {{ isEditMode
+                ? 'Update ticket information'
+                : 'Ticket information and description' }}
+            </p>
+          </div>
+
+          <button
+            type="button"
+            class="close-btn"
+            (click)="closeTicket()">
+            &times;
+          </button>
+        </div>
+
+        @if (updateSuccess) {
+          <div class="update-success">{{ updateSuccess }}</div>
+        }
+
+        @if (updateError) {
+          <div class="update-error">{{ updateError }}</div>
+        }
+
+        @if (!isEditMode) {
+          <div class="modal-body">
+            <div class="detail-item">
+              <label>Ticket ID</label>
+              <strong>#TKT-{{ selectedTicket.id }}</strong>
+            </div>
+
+            <div class="detail-item">
+              <label>Ticket Title</label>
+              <strong>{{ selectedTicket.title }}</strong>
+            </div>
+
+            <div class="detail-item">
+              <label>Category</label>
+              <strong>{{ selectedTicket.category }}</strong>
+            </div>
+
+            <div class="detail-item">
+              <label>Priority</label>
+              <span
+                [class]="'priority ' + selectedTicket.priority.toLowerCase()">
+                {{ selectedTicket.priority }}
+              </span>
+            </div>
+
+            <div class="detail-item">
+              <label>Status</label>
+              <span
+                [class]="'status ' + selectedTicket.status.toLowerCase().replace(' ', '-')">
+                {{ selectedTicket.status }}
+              </span>
+            </div>
+
+            <div class="detail-item">
+              <label>Created Date</label>
+              <strong>{{ selectedTicket.created }}</strong>
+            </div>
+
+            <div class="detail-item description-item">
+              <label>Description</label>
+              <p>{{ selectedTicket.description }}</p>
+            </div>
+          </div>
+        } @else {
+          <div class="modal-body edit-form-body">
+            <div class="detail-item">
+              <label>Ticket Title</label>
+              <input
+                type="text"
+                [(ngModel)]="editForm.title"
+                minlength="5"
+                maxlength="200">
+            </div>
+
+            <div class="detail-item">
+              <label>Category</label>
+              <select [(ngModel)]="editForm.categoryId">
+                @for (category of categories; track category.id) {
+                  <option [ngValue]="category.id">{{ category.name }}</option>
+                }
+              </select>
+            </div>
+
+            <div class="detail-item">
+              <label>Priority</label>
+              <select [(ngModel)]="editForm.priorityId">
+                @for (priority of priorities; track priority.id) {
+                  <option [ngValue]="priority.id">{{ priority.name }}</option>
+                }
+              </select>
+            </div>
+
+            <div class="detail-item">
+              <label>Status</label>
+              <select [(ngModel)]="editForm.status">
+                <option value="Open">Open</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Resolved">Resolved</option>
+                <option value="Closed">Closed</option>
+              </select>
+            </div>
+
+            <div class="detail-item description-item">
+              <label>Description</label>
+              <textarea
+                [(ngModel)]="editForm.description"
+                minlength="10"
+                maxlength="2000"
+                rows="5"></textarea>
+            </div>
+          </div>
+        }
+
+        @if (!isEditMode) {
+          <section class="interaction-section">
+            <div class="interaction-heading">
+              <h4><span>📎</span> Attachments</h4>
+              <span class="section-count">{{ attachments.length }}</span>
+            </div>
+
+            @if (attachmentError) {
+              <div class="update-error">{{ attachmentError }}</div>
+            }
+
+            <div class="attachments-list">
+              @if (isLoadingAttachments) {
+                <p class="section-empty">Loading attachments...</p>
+              } @else if (attachments.length === 0) {
+                <p class="section-empty">No attachments uploaded yet.</p>
+              } @else {
+                @for (attachment of attachments; track attachment.id) {
+                  <div class="attachment-item">
+                    <div class="attachment-file-icon">📄</div>
+                    <div class="attachment-file-info">
+                      <strong>{{ attachment.fileName }}</strong>
+                      <small>
+                        Uploaded {{ attachment.uploadedAt | date:'dd MMM yyyy, hh:mm a' }}
+                      </small>
+                    </div>
+                    <button
+                      type="button"
+                      class="download-btn"
+                      (click)="downloadFile(attachment)">
+                      Download
+                    </button>
+                  </div>
+                }
+              }
+            </div>
+          </section>
+        }
+
+        <div class="modal-footer">
+          @if (isEditMode) {
+            <button
+              type="button"
+              class="save-status-btn"
+              (click)="saveTicket()"
+              [disabled]="isUpdating || isDeleting">
+              {{ isUpdating ? 'Saving...' : 'Save Changes' }}
+            </button>
+
+            <button
+              type="button"
+              class="modal-close-btn"
+              (click)="cancelEditing()"
+              [disabled]="isUpdating">
+              Cancel
+            </button>
+          } @else {
+            <button
+              type="button"
+              class="edit-ticket-btn"
+              (click)="startEditing()">
+              Edit
+            </button>
+
+            <button
+              type="button"
+              class="delete-ticket-btn"
+              (click)="deleteTicket()"
+              [disabled]="isDeleting">
+              {{ isDeleting ? 'Deleting...' : 'Delete' }}
+            </button>
+
+            <button
+              type="button"
+              class="modal-close-btn"
+              (click)="closeTicket()">
+              Close
+            </button>
+          }
+        </div>
+
+      </div>
+    </div>
+  }
+</div>

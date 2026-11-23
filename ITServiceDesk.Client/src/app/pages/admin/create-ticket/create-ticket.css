@@ -1,0 +1,214 @@
+
+.create-ticket-page {
+  width: 100%;
+  max-width: none;
+  box-sizing: border-box;
+  padding: 30px;
+  background: #f7f8fc;
+  min-height: 100vh;
+  color: #263248;
+}
+
+.back-button {
+  display: inline-block;
+  margin-bottom: 22px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: #5365d8;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.back-button:hover {
+  text-decoration: underline;
+}
+
+.breadcrumb {
+  color: #8992a5;
+  font-size: 13px;
+  margin-bottom: 12px;
+}
+
+.breadcrumb strong {
+  color: #344054;
+}
+
+.page-heading {
+  margin-bottom: 25px;
+}
+
+.page-heading h2 {
+  font-size: 26px;
+  font-weight: 700;
+  margin-bottom: 7px;
+}
+
+.page-heading p,
+.form-heading p {
+  color: #8992a5;
+  font-size: 14px;
+}
+
+.form-card {
+  width: 100%;
+  max-width: none;
+  box-sizing: border-box;
+  background: #fff;
+  border-radius: 12px;
+  padding: 32px;
+  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.04);
+}
+
+.form-heading {
+  border-bottom: 1px solid #edf0f5;
+  margin-bottom: 25px;
+}
+
+.form-heading h3 {
+  font-size: 19px;
+  font-weight: 650;
+}
+
+.form-heading p {
+  margin-bottom: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 22px;
+  flex: 1;
+  min-width: 0;
+}
+
+.form-group label {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 9px;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #dce1eb;
+  border-radius: 7px;
+  padding: 13px 14px;
+  font-size: 14px;
+  color: #344054;
+  background: #fff;
+  outline: none;
+  font-family: inherit;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  border-color: #6475e5;
+  box-shadow: 0 0 0 3px rgba(100, 117, 229, 0.1);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 130px;
+}
+
+.form-group small {
+  margin-top: 7px;
+  color: #929bad;
+  font-size: 12px;
+}
+
+.form-row {
+  display: flex;
+  gap: 24px;
+  width: 100%;
+}
+
+.form-row .form-group {
+  flex: 1;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.cancel-btn,
+.submit-btn {
+  padding: 12px 24px;
+  border-radius: 7px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.cancel-btn {
+  background: #fff;
+  border: 1px solid #dce1eb;
+  color: #536078;
+}
+
+.submit-btn {
+  background: #5869d9;
+  border: 1px solid #5869d9;
+  color: #fff;
+}
+
+.submit-btn:hover:not(:disabled) {
+  background: #4556c5;
+}
+
+.submit-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.alert-error,
+.alert-success {
+  padding: 12px 15px;
+  border-radius: 7px;
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+
+.alert-error {
+  color: #b42318;
+  background: #fef3f2;
+  border: 1px solid #fecdca;
+}
+
+.alert-success {
+  color: #027a48;
+  background: #ecfdf3;
+  border: 1px solid #abefc6;
+}
+
+@media (max-width: 650px) {
+  .create-ticket-page {
+    padding: 18px;
+  }
+
+  .form-card {
+    padding: 20px;
+  }
+
+  .form-row {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .form-actions {
+    flex-direction: column-reverse;
+  }
+
+  .cancel-btn,
+  .submit-btn {
+    width: 100%;
+  }
+}

@@ -1,0 +1,85 @@
+# Build output
+**/bin/
+**/obj/
+**/out-tsc/
+**/dist/
+**/.angular/
+**/coverage/
+**/TestResults/
+
+# Node and package-manager artifacts
+**/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Runtime data
+**/Logs/
+**/Uploads/
+**/*.log
+**/*.pid
+**/*.seed
+
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+**/*.local.json
+**/appsettings.Development.json
+**/appsettings.Local.json
+**/appsettings.*.local.json
+**/Properties/launchSettings.json
+**/secrets.json
+**/*.secret
+**/*.credentials
+
+# Database files and backups
+**/*.mdf
+**/*.ndf
+**/*.ldf
+**/*.bak
+**/*.db
+**/*.sqlite
+**/*.sqlite3
+**/*.db-shm
+**/*.db-wal
+**/*.dacpac
+**/*.bacpac
+
+# IDE and editor files
+.vs/
+.vscode/
+**/.idea/
+**/.history/
+**/*.user
+**/*.suo
+**/*.userosscache
+**/*.sln.docstates
+**/*.sublime-workspace
+**/*.swp
+**/*.tmp
+**/*.temp
+
+# OS files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+
+# Test, coverage, and local tooling artifacts
+test-results/
+TestResults/
+*.trx
+*.coverage
+*.coveragexml
+*.ncrunch*
+*.resharper
+*.DotSettings.user
+*.tsbuildinfo
+__screenshots__/
+.sass-cache/
+
+# Local release archives
+*.zip
+*.7z
+*.rar

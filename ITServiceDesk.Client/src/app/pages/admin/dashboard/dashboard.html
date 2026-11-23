@@ -1,0 +1,300 @@
+
+<div class="app-container">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-icon">IT</div>
+      <div>
+        <h4>ServiceDesk</h4>
+        <span>Management Portal</span>
+      </div>
+    </div>
+
+    <div class="menu-label">MAIN MENU</div>
+
+    <nav class="sidebar-nav">
+      <a routerLink="/admin/dashboard" routerLinkActive="active" class="nav-item">
+        <span>▦</span> Dashboard
+      </a>
+      <a routerLink="/admin/tickets" routerLinkActive="active" class="nav-item">
+        <span>▤</span> All Tickets
+      </a>
+      <a routerLink="/admin/assigned-tickets" routerLinkActive="active" class="nav-item">
+        <span>◷</span> Assigned Tickets
+      </a>
+
+      <div class="menu-label mt-4">MANAGEMENT</div>
+
+      <a routerLink="/admin/categories" routerLinkActive="active" class="nav-item">
+        <span>▧</span> Categories
+      </a>
+      <a routerLink="/admin/users" routerLinkActive="active" class="nav-item">
+        <span>♙</span> Users
+      </a>
+      <a routerLink="/admin/reports" routerLinkActive="active" class="nav-item">
+        <span>▥</span> Reports
+      </a>
+      <a routerLink="/admin/audit-logs" routerLinkActive="active" class="nav-item">
+        <span>◉</span> Audit Logs
+      </a>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <div class="support-box">
+        <div class="support-icon">?</div>
+        <strong>Need help?</strong>
+        <p>Contact your system administrator.</p>
+      </div>
+      <div class="user-profile">
+        <div class="avatar">AU</div>
+        <div class="user-info">
+          <strong>Admin User</strong>
+          <span>Administrator</span>
+        </div>
+        <span class="profile-menu">⋮</span>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    <header class="topbar">
+      <div>
+        <div class="breadcrumb">Pages / <strong>Dashboard</strong></div>
+        <h3>Dashboard</h3>
+      </div>
+      <div class="topbar-right">
+        <div class="search-box">
+          <span>⌕</span>
+          <input type="text" placeholder="Search anything...">
+        </div>
+        <button class="notification-btn" aria-label="Notifications">♧</button>
+        <button type="button" class="btn btn-outline-danger btn-sm" (click)="logout()">Logout</button>
+        <div class="top-avatar">AU</div>
+      </div>
+    </header>
+
+    <section class="dashboard-content">
+
+      <div class="welcome-section">
+        <div>
+          <h2>Welcome back, Admin! 👋</h2>
+          <p>Here's what's happening with your service desk today.</p>
+        </div>
+        <button class="primary-btn" routerLink="/admin/create-ticket">
+          <span>+</span> Create New Ticket
+        </button>
+      </div>
+
+      @if (errorMessage) {
+        <div class="alert alert-danger">{{ errorMessage }}</div>
+      }
+
+      @if (isLoading) {
+        <div class="text-center p-4">Loading dashboard...</div>
+      } @else {
+
+        <!-- Statistics Cards -->
+        <div class="stats-grid">
+
+          <div class="stat-card">
+            <div class="stat-top">
+              <span>Total Tickets</span>
+              <div class="stat-icon blue">▤</div>
+            </div>
+            <h2>{{ stats.totalTickets }}</h2>
+            <div class="stat-description">All tickets in the system</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-top">
+              <span>Open Tickets</span>
+              <div class="stat-icon orange">◷</div>
+            </div>
+            <h2>{{ stats.openTickets }}</h2>
+            <div class="stat-description">Waiting for resolution</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-top">
+              <span>In Progress</span>
+              <div class="stat-icon purple">↻</div>
+            </div>
+            <h2>{{ stats.inProgressTickets }}</h2>
+            <div class="stat-description">Currently being handled</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-top">
+              <span>Resolved</span>
+              <div class="stat-icon green">✓</div>
+            </div>
+            <h2>{{ stats.resolvedTickets }}</h2>
+            <div class="stat-description">Successfully resolved</div>
+          </div>
+
+        </div>
+
+        <!-- Recent Tickets -->
+        <div class="content-card">
+          <div class="card-heading">
+            <div>
+              <h4>Recent Tickets</h4>
+              <p>Overview of the latest support requests</p>
+            </div>
+            <button class="outline-btn" routerLink="/admin/tickets">
+              View All Tickets →
+            </button>
+          </div>
+
+          <div class="table-responsive">
+            <table class="table ticket-table align-middle">
+              <thead>
+                <tr>
+                  <th>Ticket ID</th>
+                  <th>Subject</th>
+                  <th>Category</th>
+                  <th>Priority</th>
+                  <th>Status</th>
+                  <th>Created</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                @if (recentTickets.length > 0) {
+                  @for (ticket of recentTickets; track ticket.id) {
+                    <tr>
+                      <td>#TKT-{{ ticket.id }}</td>
+                      <td>
+                        <strong>{{ ticket.title }}</strong>
+                        <small>{{ ticket.description }}</small>
+                      </td>
+                      <td>{{ ticket.categoryName }}</td>
+                      <td>
+                        <span class="priority"
+                          [ngClass]="getPriorityClass(ticket.priorityName)">
+                          {{ ticket.priorityName }}
+                        </span>
+                      </td>
+                      <td>
+                        <span class="status"
+                          [ngClass]="getStatusClass(ticket.status)">
+                          {{ ticket.status }}
+                        </span>
+                      </td>
+                      <td>{{ ticket.createdAt | date:'dd MMM yyyy' }}</td>
+                    </tr>
+                  }
+                } @else {
+                  <tr>
+                    <td colspan="6" class="text-center p-4">
+                      No tickets available.
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Bottom Grid -->
+        <div class="bottom-grid">
+
+          <!-- Ticket Overview -->
+          <div class="content-card">
+            <div class="card-heading">
+              <div>
+                <h4>Ticket Overview</h4>
+                <p>Current ticket distribution</p>
+              </div>
+            </div>
+
+            <div class="overview-row">
+              <span>Open</span>
+              <strong>{{ stats.openTickets }}</strong>
+            </div>
+            <div class="progress mb-3">
+              <div class="progress-bar bg-warning"
+                [style.width.%]="openPercentage"></div>
+            </div>
+
+            <div class="overview-row">
+              <span>In Progress</span>
+              <strong>{{ stats.inProgressTickets }}</strong>
+            </div>
+            <div class="progress mb-3">
+              <div class="progress-bar bg-primary"
+                [style.width.%]="progressPercentage"></div>
+            </div>
+
+            <div class="overview-row">
+              <span>Resolved</span>
+              <strong>{{ stats.resolvedTickets }}</strong>
+            </div>
+            <div class="progress">
+              <div class="progress-bar bg-success"
+                [style.width.%]="resolvedPercentage"></div>
+            </div>
+
+            <!-- Category Statistics -->
+            <div class="mt-4">
+              <h5 class="mb-3">Tickets by Category</h5>
+
+              @if (categoryStats.length > 0) {
+                @for (category of categoryStats; track category.categoryName) {
+                  <div class="overview-row">
+                    <span>{{ category.categoryName }}</span>
+                    <strong>{{ category.ticketCount }}</strong>
+                  </div>
+                }
+              } @else {
+                <p class="text-muted small">
+                  No category data available.
+                </p>
+              }
+            </div>
+          </div>
+
+          <!-- Quick Information -->
+          <div class="content-card activity-card">
+            <div class="card-heading">
+              <div>
+                <h4>Quick Information</h4>
+                <p>Service desk summary</p>
+              </div>
+            </div>
+
+            <div class="quick-info">
+              <div class="quick-icon">♙</div>
+              <div>
+                <strong>Registered Users</strong>
+                <p>Manage user accounts and access</p>
+              </div>
+            </div>
+
+            <div class="quick-info">
+              <div class="quick-icon">▧</div>
+              <div>
+                <strong>Ticket Categories</strong>
+                <p>Organize and manage support requests</p>
+              </div>
+            </div>
+
+            <div class="quick-info">
+              <div class="quick-icon">▥</div>
+              <div>
+                <strong>System Reports</strong>
+                <p>Monitor service desk performance</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      }
+
+      <footer class="footer">
+        © 2026 IT Service Desk Management System
+        <span>Built with Angular & ASP.NET Core</span>
+      </footer>
+
+    </section>
+  </main>
+</div>

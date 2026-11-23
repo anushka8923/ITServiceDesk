@@ -1,0 +1,159 @@
+
+<div class="reports-page">
+  <app-role-back-button />
+
+  <div class="page-header">
+    <div>
+      <h2>Reports & Analytics</h2>
+      <p>Analyze ticket performance and export reports.</p>
+    </div>
+
+    <button class="btn btn-outline-secondary" (click)="loadTickets()">
+      ↻ Refresh
+    </button>
+  </div>
+
+  @if (errorMessage) {
+    <div class="alert alert-danger">{{ errorMessage }}</div>
+  }
+
+  @if (isLoading) {
+    <div class="loading-box">Loading reports...</div>
+  } @else {
+
+    <div class="filter-section">
+      <h5>Filter Reports</h5>
+
+      <div class="filter-grid">
+        <div>
+          <label>Status</label>
+          <select class="form-select" [(ngModel)]="selectedStatus">
+            <option value="All">All Statuses</option>
+            <option value="Open">Open</option>
+            <option value="In Progress">In Progress</option>
+            <option value="Resolved">Resolved</option>
+            <option value="Closed">Closed</option>
+          </select>
+        </div>
+
+        <div>
+          <label>From Date</label>
+          <input type="date" class="form-control" [(ngModel)]="fromDate">
+        </div>
+
+        <div>
+          <label>To Date</label>
+          <input type="date" class="form-control" [(ngModel)]="toDate">
+        </div>
+
+        <div class="filter-actions">
+          <button class="btn btn-secondary" (click)="resetFilters()">
+            Reset Filters
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card total">
+        <span>Total Tickets</span>
+        <h2>{{ totalTickets }}</h2>
+      </div>
+
+      <div class="stat-card open">
+        <span>Open Tickets</span>
+        <h2>{{ openTickets }}</h2>
+      </div>
+
+      <div class="stat-card in-progress">
+        <span>In Progress</span>
+        <h2>{{ inProgressTickets }}</h2>
+      </div>
+
+      <div class="stat-card resolved">
+        <span>Resolved</span>
+        <h2>{{ resolvedTickets }}</h2>
+      </div>
+
+      <div class="stat-card closed">
+        <span>Closed</span>
+        <h2>{{ closedTickets }}</h2>
+      </div>
+    </div>
+
+    <div class="export-section">
+      <div>
+        <h5>Export Report</h5>
+        <p>Download the currently filtered ticket records.</p>
+      </div>
+
+      <div class="export-buttons">
+        <button
+          class="btn btn-success"
+          [disabled]="filteredTickets.length === 0"
+          (click)="exportExcel()">
+          ↓ Export Excel
+        </button>
+
+        <button
+          class="btn btn-danger"
+          [disabled]="filteredTickets.length === 0"
+          (click)="exportPDF()">
+          ↓ Export PDF
+        </button>
+      </div>
+    </div>
+
+    <div class="table-section">
+      <div class="table-heading">
+        <h5>Ticket Report</h5>
+        <span>{{ filteredTickets.length }} records found</span>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Ticket</th>
+              <th>Category</th>
+              <th>Priority</th>
+              <th>Status</th>
+              <th>Created Date</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @for (ticket of filteredTickets; track ticket.id) {
+              <tr>
+                <td>#{{ ticket.id }}</td>
+                <td>
+                  <strong>{{ ticket.title }}</strong>
+                  <small>{{ ticket.description }}</small>
+                </td>
+                <td>{{ ticket.categoryName }}</td>
+                <td>{{ ticket.priorityName }}</td>
+                <td>
+                  <span class="status-label"
+                    [class.open-label]="ticket.status === 'Open'"
+                    [class.progress-label]="ticket.status === 'In Progress'"
+                    [class.resolved-label]="ticket.status === 'Resolved'"
+                    [class.closed-label]="ticket.status === 'Closed'">
+                    {{ ticket.status }}
+                  </span>
+                </td>
+                <td>{{ ticket.createdAt | date:'mediumDate' }}</td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="6" class="empty-state">
+                  No tickets found for the selected filters.
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  }
+</div>

@@ -1,0 +1,186 @@
+
+<div class="assignment-page">
+  <app-role-back-button />
+
+  <div class="page-header">
+    <div>
+      <h2>Ticket Assignments</h2>
+      <p>Assign tickets to team members and manage assignment history.</p>
+    </div>
+
+    <button class="btn btn-outline-secondary" (click)="loadData()">
+      ↻ Refresh
+    </button>
+  </div>
+
+  @if (successMessage) {
+    <div class="alert alert-success alert-dismissible">
+      {{ successMessage }}
+      <button class="btn-close" (click)="clearMessages()"></button>
+    </div>
+  }
+
+  @if (errorMessage) {
+    <div class="alert alert-danger alert-dismissible">
+      {{ errorMessage }}
+      <button class="btn-close" (click)="clearMessages()"></button>
+    </div>
+  }
+
+  <div class="assignment-stats">
+    <div class="stat-card">
+      <span>Total Assignments</span>
+      <h3>{{ assignments.length }}</h3>
+    </div>
+
+    <div class="stat-card active-card">
+      <span>Active Assignments</span>
+      <h3>{{ activeCount }}</h3>
+    </div>
+
+    <div class="stat-card inactive-card">
+      <span>Unassigned</span>
+      <h3>{{ unassignedCount }}</h3>
+    </div>
+  </div>
+
+  <div class="assign-form-section">
+    <h5>Assign New Ticket</h5>
+    <p>Select a ticket and enter the Identity User ID of the person receiving it.</p>
+
+    <form (ngSubmit)="assignTicket()" class="assign-form">
+
+      <div>
+        <label class="form-label">Select Ticket *</label>
+
+        <select
+          class="form-select"
+          name="selectedTicketId"
+          [(ngModel)]="selectedTicketId"
+          required>
+
+          <option [ngValue]="null">Choose a ticket</option>
+
+          @for (ticket of tickets; track ticket.id) {
+            <option [ngValue]="ticket.id">
+              #{{ ticket.id }} - {{ ticket.title }} ({{ ticket.status }})
+            </option>
+          }
+        </select>
+      </div>
+
+      <div>
+        <label class="form-label">Assignee User ID *</label>
+
+        <input
+          type="text"
+          class="form-control"
+          name="assignedToUserId"
+          [(ngModel)]="assignedToUserId"
+          placeholder="Enter Identity User ID"
+          required>
+      </div>
+
+      <div class="assign-button">
+        <button
+          type="submit"
+          class="btn btn-primary"
+          [disabled]="isSaving">
+          {{ isSaving ? 'Assigning...' : 'Assign Ticket' }}
+        </button>
+      </div>
+
+    </form>
+  </div>
+
+  <div class="assignment-table-section">
+
+    <div class="table-toolbar">
+      <div>
+        <h5>Assignment History</h5>
+        <p>View current and previous ticket assignments.</p>
+      </div>
+
+      <div class="table-filters">
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Search ticket or user ID..."
+          [(ngModel)]="searchText">
+
+        <select class="form-select" [(ngModel)]="statusFilter">
+          <option value="All">All Assignments</option>
+          <option value="Active">Active</option>
+          <option value="Unassigned">Unassigned</option>
+        </select>
+      </div>
+    </div>
+
+    @if (isLoading) {
+      <div class="empty-state">Loading assignments...</div>
+    } @else {
+
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead>
+            <tr>
+              <th>Assignment ID</th>
+              <th>Ticket ID</th>
+              <th>Assigned To</th>
+              <th>Assigned By</th>
+              <th>Assigned Date</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @for (item of filteredAssignments; track item.id) {
+              <tr>
+                <td>#{{ item.id }}</td>
+                <td><strong>#{{ item.ticketId }}</strong></td>
+                <td class="user-id">{{ item.assignedToUserId }}</td>
+                <td class="user-id">{{ item.assignedByUserId }}</td>
+                <td>{{ item.assignedAt | date:'medium' }}</td>
+
+                <td>
+                  <span
+                    class="status-badge"
+                    [class.active-badge]="!item.unassignedAt"
+                    [class.inactive-badge]="!!item.unassignedAt">
+                    {{ item.unassignedAt ? 'Unassigned' : 'Active' }}
+                  </span>
+                </td>
+
+                <td>
+                  @if (!item.unassignedAt) {
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-outline-danger"
+                      (click)="unassignTicket(item)">
+                      Unassign
+                    </button>
+                  } @else {
+                    <span class="text-muted">Already Unassigned</span>
+                  }
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="7" class="empty-state">
+                  No assignments found.
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+
+    <div class="table-footer">
+      Showing {{ filteredAssignments.length }} of
+      {{ assignments.length }} assignments
+    </div>
+
+  </div>
+</div>

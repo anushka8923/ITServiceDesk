@@ -1,0 +1,162 @@
+
+<div class="create-ticket-page">
+
+    <app-role-back-button />
+
+  <div class="breadcrumb">
+    @if (isUserCreate) {
+      <strong>Create Ticket</strong>
+    } @else {
+      Pages / Admin / <strong>Create Ticket</strong>
+    }
+  </div>
+
+  <div class="page-heading">
+    <h2>Create New Ticket</h2>
+    <p>Submit a new support request by filling in the details below.</p>
+  </div>
+
+  <div class="form-card">
+
+    <div class="form-heading">
+      <h3>Ticket Information</h3>
+      <p>Fields marked with * are required.</p>
+    </div>
+
+    @if (errorMessage) {
+      <div class="alert-error">
+        {{ errorMessage }}
+      </div>
+    }
+
+    @if (successMessage) {
+      <div class="alert-success">
+        {{ successMessage }}
+      </div>
+    }
+
+    <form #ticketForm="ngForm" (ngSubmit)="createTicket()">
+
+      <div class="form-group">
+        <label for="title">Ticket Title *</label>
+
+        <input
+          type="text"
+          id="title"
+          name="title"
+          [(ngModel)]="title"
+          required
+          minlength="5"
+          maxlength="200"
+          placeholder="Enter ticket title"
+        />
+
+        <small>Minimum 5 and maximum 200 characters.</small>
+      </div>
+
+      <div class="form-group">
+        <label for="description">Description *</label>
+
+        <textarea
+          id="description"
+          name="description"
+          [(ngModel)]="description"
+          required
+          minlength="10"
+          maxlength="2000"
+          rows="5"
+          placeholder="Describe your issue in detail..."
+        ></textarea>
+
+        <small>Minimum 10 and maximum 2000 characters.</small>
+      </div>
+
+      @if (isUserCreate) {
+        <div class="form-group">
+          <label for="attachment">Attachment (optional)</label>
+          <input
+            type="file"
+            id="attachment"
+            name="attachment"
+            accept=".jpg,.jpeg,.png,.pdf,.doc,.docx"
+            (change)="onFileSelected($event)"
+          />
+          <small>Allowed: JPG, JPEG, PNG, PDF, DOC, DOCX. Maximum size: 5 MB.</small>
+          @if (selectedFile) {
+            <small>Selected: {{ selectedFile.name }} ({{ formatFileSize(selectedFile.size) }})</small>
+          }
+        </div>
+      }
+
+      <div class="form-row">
+
+        <div class="form-group">
+          <label for="category">Category *</label>
+
+          <select
+            id="category"
+            name="categoryId"
+            [(ngModel)]="categoryId"
+            required
+          >
+            <option [ngValue]="0">Select Category</option>
+
+            @for (category of categories; track category.id) {
+              <option [ngValue]="category.id">
+                {{ category.name }}
+              </option>
+            }
+          </select>
+
+          @if (categories.length === 0) {
+            <small>No categories available.</small>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="priority">Priority *</label>
+
+          <select
+            id="priority"
+            name="priorityId"
+            [(ngModel)]="priorityId"
+            required
+          >
+            <option [ngValue]="0">Select Priority</option>
+
+            @for (priority of priorities; track priority.id) {
+              <option [ngValue]="priority.id">
+                {{ priority.name }}
+              </option>
+            }
+          </select>
+
+          @if (priorities.length === 0) {
+            <small>No priorities available.</small>
+          }
+        </div>
+
+      </div>
+
+      <div class="form-actions">
+
+        <button
+          type="button"
+          class="cancel-btn"
+          (click)="goBack()">
+          Cancel
+        </button>
+
+        <button
+          type="submit"
+          class="submit-btn"
+          [disabled]="isSubmitting || !ticketForm.valid || categoryId <= 0 || priorityId <= 0"
+        >
+          {{ isSubmitting ? 'Creating...' : 'Create Ticket' }}
+        </button>
+
+      </div>
+
+    </form>
+  </div>
+</div>

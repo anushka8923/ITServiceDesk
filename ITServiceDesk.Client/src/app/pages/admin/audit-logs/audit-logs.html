@@ -1,0 +1,158 @@
+
+<div class="audit-page">
+  <app-role-back-button />
+
+  <div class="page-header">
+    <div>
+      <h2>Audit Logs</h2>
+      <p>Monitor user activities and track important system events.</p>
+    </div>
+
+    <button
+      type="button"
+      class="btn btn-outline-secondary"
+      (click)="loadLogs()"
+      [disabled]="isLoading">
+      ↻ Refresh
+    </button>
+  </div>
+
+  <div class="audit-stats">
+    <div class="stat-card">
+      <span>Total Activities</span>
+      <h3>{{ totalLogs }}</h3>
+    </div>
+
+    <div class="stat-card today-card">
+      <span>Today's Activities</span>
+      <h3>{{ todayLogs }}</h3>
+    </div>
+
+    <div class="stat-card users-card">
+      <span>Unique Users</span>
+      <h3>{{ uniqueUsers }}</h3>
+    </div>
+  </div>
+
+  @if (errorMessage) {
+    <div class="alert alert-danger">
+      {{ errorMessage }}
+    </div>
+  }
+
+  <div class="audit-content">
+
+    <div class="filter-header">
+      <div>
+        <h5>Activity History</h5>
+        <p>Search and filter recorded system activities.</p>
+      </div>
+    </div>
+
+    <div class="filters">
+
+      <div class="filter-field search-field">
+        <label class="form-label">Search Activities</label>
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Search user ID, action or details..."
+          [(ngModel)]="searchText">
+      </div>
+
+      <div class="filter-field">
+        <label class="form-label">Action Type</label>
+        <select class="form-select" [(ngModel)]="actionFilter">
+          <option value="All">All Actions</option>
+          @for (action of actionOptions; track action) {
+            <option [value]="action">{{ action }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="filter-field">
+        <label class="form-label">From Date</label>
+        <input
+          type="date"
+          class="form-control"
+          [(ngModel)]="fromDate">
+      </div>
+
+      <div class="filter-field">
+        <label class="form-label">To Date</label>
+        <input
+          type="date"
+          class="form-control"
+          [(ngModel)]="toDate">
+      </div>
+
+      <div class="filter-action">
+        <button
+          type="button"
+          class="btn btn-outline-secondary"
+          (click)="resetFilters()">
+          Reset Filters
+        </button>
+      </div>
+
+    </div>
+
+    @if (isLoading) {
+      <div class="empty-state">
+        Loading audit logs...
+      </div>
+    } @else {
+
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead>
+            <tr>
+              <th>Log ID</th>
+              <th>User ID</th>
+              <th>Action</th>
+              <th>Activity Details</th>
+              <th>Date & Time</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @for (log of filteredLogs; track log.id) {
+              <tr>
+                <td><strong>#{{ log.id }}</strong></td>
+
+                <td class="user-id">
+                  {{ log.userId || 'System' }}
+                </td>
+
+                <td>
+                  <span class="action-badge">
+                    {{ log.action }}
+                  </span>
+                </td>
+
+                <td class="details-cell">
+                  {{ log.details || 'No details available' }}
+                </td>
+
+                <td class="date-cell">
+                  {{ log.createdAt | date:'medium' }}
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="5" class="empty-state">
+                  No audit activities found.
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+
+    <div class="table-footer">
+      Showing {{ filteredLogs.length }} of {{ totalLogs }} activities
+    </div>
+
+  </div>
+</div>
